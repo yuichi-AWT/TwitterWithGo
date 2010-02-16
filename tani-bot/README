@@ -1,0 +1,7 @@
+* tani-bot.go
+ - 8g -I/your/directory/path/TwitterWithGo/pkg/twitter -I/your/directory/path/TwitterWithGo/pkg/file tani-bot.go
+ - 8l -L/your/directory/path/TwitterWithGo/pkg/twitter -L/your/directory/path/TwitterWithGo/pkg/file -o tani-bot tani-bot.8
+
+* get-goroku.go
+ - 8g get-goroku.go
+ - 8l -o get-goroku get-goroku.8
