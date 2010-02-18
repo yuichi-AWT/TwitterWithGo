@@ -390,12 +390,23 @@ func (c *Client)RetweetedOfMe(sinceId uint64, maxId uint64, count uint, page uin
 	return tweets
 }
 
+func (c *Client)Tweet(tweet string) (err os.Error){
+	return c.StatusesUpdate(tweet, 0)
+}
+
+func (c *Client)ReplyTweet(tweet string, replyId uint64) (err os.Error){
+	return c.StatusesUpdate(tweet, replyId)
+}
+
 func (c *Client)StatusesUpdate(status string, replyId uint64) (err os.Error){
 	var params string
 
-	if status != ""{
-		params = addParam(params, "status", status)
+	if status == ""{
+		return os.NewError("must need \"status\" parameter.")
 	}
+
+	params = addParam(params, "status", http.URLEscape(status))
+
 	if replyId != 0{
 		params = addParam(params, "in_reply_to_status_id", fmt.Sprintf("%d", replyId))
 	}
@@ -412,6 +423,5 @@ func (c *Client)StatusesUpdate(status string, replyId uint64) (err os.Error){
 
 	return nil
 }
-
 
 
