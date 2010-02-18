@@ -424,4 +424,25 @@ func (c *Client)StatusesUpdate(status string, replyId uint64) (err os.Error){
 	return nil
 }
 
+func (c *Client)DestroyTweet(id uint64) (err os.Error){
+	return c.StatusesDestroy(id)
+}
+
+func (c *Client)StatusesDestroy(id uint64) (err os.Error){
+	if id == 0{
+		return os.NewError("must need \"id\" parameter.")
+	}
+
+	url := c.makeAuthURL(statusesDestroy + fmt.Sprintf("/%d", id), "")
+	res, err := http.Post(url, "", bytes.NewBufferString(""))
+	if err != nil{
+		return err
+	}
+
+	if res.Status != "200 OK"{
+		return os.NewError("Request failed")
+	}
+
+	return nil
+}
 
