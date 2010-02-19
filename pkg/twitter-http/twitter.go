@@ -468,3 +468,33 @@ func (c *Client)StatusesRetweet(id uint64) (err os.Error){
 	return nil
 }
 
+func (c *Client)StatusesRetweets(id uint64, count int) (t []Tweet){
+	var params string
+	var tweets []Tweet
+
+	if id == 0{
+		return nil
+	}
+
+	if count != 0{
+		params = addParam(params, "count", fmt.Sprintf("%d", count))
+	}
+
+	url := c.makeAuthURL(statusesRetweets + fmt.Sprintf("/%d", id), params)
+	res, _, err := http.Get(url)
+	if err != nil{
+		return nil
+	}
+
+	if res.Status != "200 OK"{
+		return nil
+	}
+
+    reader := bufio.NewReader(res.Body);
+    line, _ := reader.ReadString(0);
+
+	print(line+"\n")
+	json.Unmarshal(line, &tweets)
+
+	return tweets
+}
