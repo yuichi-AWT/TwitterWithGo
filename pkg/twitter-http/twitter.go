@@ -36,6 +36,11 @@ const(
 	usersSearch = "/users/search"
 	statusesFriends = "/statuses/friends"
 	statusesFollowers = "/statuses/followers"
+//Friendship Methods
+	friendshipsCreate = "/friendships/create"
+	friendshipsDestroy = "/friendships/destroy"
+	friendshipsExists = "/friendships/exists"
+	friendshipsShow = "/friendships/show"
 )
 
 // 以下3つはjsonデータのパース用
@@ -497,4 +502,108 @@ func (c *Client)StatusesRetweets(id uint64, count int) (t []Tweet){
 	json.Unmarshal(line, &tweets)
 
 	return tweets
+}
+
+func (c *Client)Following(userId uint64, screenName string, cursor int)(u []User){
+	return c.StatusesFriends(userId, screenName, cursor)
+}
+
+func (c *Client)Friends(userId uint64, screenName string, cursor int)(u []User){
+	return c.StatusesFriends(userId, screenName, cursor)
+}
+
+func (c *Client)StatusesFriends(userId uint64, screenName string, cursor int)(u []User){
+	var params string
+	var users []User
+
+	if userId != 0{
+		params = addParam(params, "user_id", fmt.Sprintf("%d", userId))
+	}
+	if screenName != ""{
+		params = addParam(params, "screen_name", screenName)
+	}
+	if cursor != 0{
+		params = addParam(params, "cursor", fmt.Sprintf("%d", cursor))
+	}
+
+	url := c.makeAuthURL(statusesFriends, params)
+	res, _, err := http.Get(url)
+	if err != nil{
+		return nil
+	}
+
+	if res.Status != "200 OK"{
+		return nil
+	}
+
+    reader := bufio.NewReader(res.Body);
+    line, _ := reader.ReadString(0);
+
+	json.Unmarshal(line, &users)
+
+	return users
+
+}
+
+func (c *Client)Followers(userId uint64, screenName string, cursor int)(u []User){
+	return c.StatusesFollowers(userId, screenName, cursor)
+}
+
+func (c *Client)StatusesFollowers(userId uint64, screenName string, cursor int)(u []User){
+	var params string
+	var users []User
+
+	if userId != 0{
+		params = addParam(params, "user_id", fmt.Sprintf("%d", userId))
+	}
+	if screenName != ""{
+		params = addParam(params, "screen_name", screenName)
+	}
+	if cursor != 0{
+		params = addParam(params, "cursor", fmt.Sprintf("%d", cursor))
+	}
+
+	url := c.makeAuthURL(statusesFollowers, params)
+	res, _, err := http.Get(url)
+	if err != nil{
+		return nil
+	}
+
+	if res.Status != "200 OK"{
+		return nil
+	}
+
+    reader := bufio.NewReader(res.Body);
+    line, _ := reader.ReadString(0);
+
+	json.Unmarshal(line, &users)
+
+	return users
+
+}
+
+func (c *Client)FriendshipsCreate(userId uint64, screenName string, follow bool)(err os.Error){
+	var params string
+
+	if userId != 0{
+		params = addParam(params, "user_id", fmt.Sprintf("%d", userId))
+	}
+	if screenName != ""{
+		params = addParam(params, "screen_name", screenName)
+	}
+	if follow == true{
+		params = addParam(params, "follow", "true")
+	}
+
+	url := c.makeAuthURL(friendshipsCreate, params)
+	res, err := http.Post(url, "", bytes.NewBufferString(""))
+	if err != nil{
+		return err
+	}
+
+	if res.Status != "200 OK"{
+		return os.NewError("Request failed.")
+	}
+
+	return nil
 }
