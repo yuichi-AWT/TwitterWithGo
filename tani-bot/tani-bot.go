@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func main(){
+func main() {
 	s := GetGoroku()
 
 	client := twitter.ClientBuilder("your twitter account", "password")
@@ -18,9 +18,9 @@ func main(){
 	client.Post(tweet)
 }
 
-func GetGoroku() (s string){
+func GetGoroku() (s string) {
 	file, _ := file.Open("goroku.txt", 0, 0)
-	if file == nil{
+	if file == nil {
 		return ""
 	}
 

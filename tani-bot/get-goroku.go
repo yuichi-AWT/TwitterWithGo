@@ -9,21 +9,21 @@ import (
 	"syscall"
 )
 
-func main(){
+func main() {
 	_, strs := GetGoroku()
 
 	fd, _ := syscall.Open("goroku.txt", 1, 644)
 
 	for _, s := range strs {
-		syscall.Write(fd, strings.Bytes(s))	
+		syscall.Write(fd, strings.Bytes(s))
 	}
 }
 
-func GetGoroku() (i int, s []string){
-	goroku := make(map[int] string)
+func GetGoroku() (i int, s []string) {
+	goroku := make(map[int]string)
 
 	if con, err := net.Dial("tcp", "", "XX.XX.XX.XX:YY"); err == nil {
-		io.WriteString(con, "GET " + "/cgi-bin/show.cgi" + " HTTP/1.1\r\n")
+		io.WriteString(con, "GET "+"/cgi-bin/show.cgi"+" HTTP/1.1\r\n")
 		io.WriteString(con, "Host: XX.XX.XX.XX\r\n")
 		io.WriteString(con, "Authorization: Basic XXXXXXXXXXXXXXXXX\r\n")
 		io.WriteString(con, "\r\n")
@@ -49,7 +49,7 @@ func GetGoroku() (i int, s []string){
 
 	length := len(goroku)
 	ret := make([]string, length)
-	for i, s := range goroku{
+	for i, s := range goroku {
 		ret[i] = s
 	}
 
