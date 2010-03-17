@@ -25,6 +25,8 @@ const (
 	retweetedByMe   = "/statuses/retweeted_by_me"
 	retweetedToMe   = "/statuses/retweeted_to_me"
 	retweetedOfMe   = "/statuses/retweeted_of_me"
+	//Direct Messages
+	directMessage = "/direct_messages"
 	//Status Methods
 	statusesShow     = "/statuses/show"
 	statusesUpdate   = "/statuses/update"
@@ -49,9 +51,11 @@ type User struct {
 	Screen_name string
 }
 type Tweet struct {
-	User User
-	Text string
-	Id   uint64
+	User       User
+	Text       string
+	Id         uint64
+	Created_at string
+	Source     string
 }
 
 // ユーザアカウント情報
@@ -343,6 +347,41 @@ func (c *Client) RetweetedToMe(sinceId uint64, maxId uint64, count uint, page ui
 	}
 
 	url := c.makeAuthURL(retweetedToMe, params)
+	res, _, err := http.Get(url)
+	if err != nil {
+		return nil
+	}
+
+	if res.Status != "200 OK" {
+		return nil
+	}
+
+	reader := bufio.NewReader(res.Body)
+	line, _ := reader.ReadString(0)
+
+	json.Unmarshal(line, &tweets)
+
+	return tweets
+}
+
+func (c *Client) DirectMessages(sinceId uint64, maxId uint64, count uint, page uint) (t []Tweet) {
+	var params string
+	var tweets []Tweet
+
+	if sinceId != 0 {
+		params = addParam(params, "since_id", fmt.Sprintf("%d", sinceId))
+	}
+	if maxId != 0 {
+		params = addParam(params, "max_id", fmt.Sprintf("%d", maxId))
+	}
+	if count != 0 {
+		params = addParam(params, "count", fmt.Sprintf("%d", count))
+	}
+	if page != 0 {
+		params = addParam(params, "page", fmt.Sprintf("%d", page))
+	}
+
+	url := c.makeAuthURL(directMessage, params)
 	res, _, err := http.Get(url)
 	if err != nil {
 		return nil
